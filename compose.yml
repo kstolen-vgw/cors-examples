@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  auth-api:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    ports:
+      - 8001:8001
+    

@@ -1,0 +1,11 @@
+### auth healthcheck
+GET http://localhost:8001/healthcheck
+
+###
+POST http://localhost:8001/login 
+Content-Type: application/json
+
+{
+    "username": "user",
+    "password": "password"
+}
