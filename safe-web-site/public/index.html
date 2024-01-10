@@ -7,7 +7,7 @@
     <button onclick="loginAction()" style="display: block">login</button>
 
     <button onclick="getDetails()" style="display: none">get my details</button>
-
+    <button onclick="deleteUser()" style="display: none;">delete user</button>
     <button onclick="logoutAction()" style="display: none">logout</button>
 </body>
 <script>
@@ -58,6 +58,16 @@
         const heading = document.getElementById('heading')
 
         heading.textContent = `Hello, ${details.givenName} ${details.surname}`
+    }
+
+    const deleteUser = () => {
+        fetch(`${authServerUrl}/user`, {
+            method: 'DELETE',
+            credentials: "include",
+        })
+        .then(res => res.text())
+        .then(data => alert(data))
+        .catch(err => alert('there was an error'))
     }
 
     const logoutAction = () => {

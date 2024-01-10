@@ -108,6 +108,12 @@ router.get('/authenticated-endpoint', corsMiddleware, (req, res, next) => {
     })
 })
 
+router.options('/user', corsMiddleware)
+router.delete('/user', corsMiddleware, (req, res, next) => {
+    console.log('random user deleted')
+    res.status(201).send('random user deleted')
+})
+
 const PORT = 8001
 
 router.listen(PORT, () => {
