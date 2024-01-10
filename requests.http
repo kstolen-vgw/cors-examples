@@ -1,11 +1,19 @@
-### auth healthcheck
+### Name: auth healthcheck
 GET http://localhost:8001/healthcheck
 
-###
+### Name: Login
 POST http://localhost:8001/login 
 Content-Type: application/json
+Origin: testing
 
 {
     "username": "user",
     "password": "password"
 }
+
+### Name: Logout
+POST http://localhost:8001/logout
+
+### Name: authenticated endpoint
+GET http://localhost:8001/authenticated-endpoint
+Origin: testing
