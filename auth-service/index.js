@@ -19,8 +19,11 @@ const allowOrigins = (req, res) => {
     const requestOrigin = req.get('origin')
     if (knownOrigins.includes(requestOrigin)) {
         res.setHeader('Access-Control-Allow-Origin', requestOrigin)
+        updateVaryHeader(res, 'Origin')
+        return true
     }
-    updateVaryHeader(res, 'Origin')
+
+    return false
 }
 
 const allowHeaders = (req, res) => {
@@ -37,13 +40,28 @@ const allowCredentials = (res) => {
     res.setHeader('Access-Control-Allow-Credentials', 'true')
 }
 
+const allowMethods = (req, res) => {
+    if (req.method.toUpperCase() === 'OPTIONS') {
+        const allowedMethods = [
+            'GET',
+            'POST',
+            'OPTIONS'
+        ]
+        
+        res.setHeader('Access-Control-Allow-Methods',allowedMethods.join(','))
+    
+        return allowedMethods.includes(req.method.toUpperCase())
+    }
+
+    return true
+}
+
 const corsMiddleware = (req, res, next) => {
-    allowOrigins(req, res)
-    allowHeaders(req, res)
     allowCredentials(res)
+    allowHeaders(req, res)
 
-
-    next()
+    if (allowOrigins(req, res) && allowMethods(req, res)) 
+        next()
 }
 
 router.use(cookieParser())
