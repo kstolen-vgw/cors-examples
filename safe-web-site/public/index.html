@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<body>
+    <h1 id="heading">
+        Hello
+    </h1>
+    <button name="button" onclick="loginAction()" style="display: block">login</button>
+
+    <button name="button" onclick="getDetails()" style="display: none">get my details</button>
+
+    <button name="button" onclick="logoutAction()" style="display: none">logout</button>
+</body>
+<script>
+    const loginAction = () => {
+        fetch('http://localhost:8001/login', {
+            method: 'POST',
+            body: JSON.stringify({
+                username: "user",
+                password: "pass"
+            }),
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include"
+        })
+        .then(res => toggleButtons())
+        .catch(err => alert(err))
+    }
+
+    const toggleButtons = () => {
+        const buttons = document.getElementsByTagName("button")
+        
+        for (btn of buttons) {
+            btn.style.display = btn.style.display === "block" ? "none" : "block"
+        }
+    }
+
+    const getDetails = () => {
+        fetch('http://localhost:8001/authenticated-endpoint', {
+            method: 'GET',
+            credentials: "include",
+        })
+        .then(res => res.json())
+        .then(data => updateHeading(data))
+        .catch(err => alert('there was an error'))
+    }
+
+    const updateHeading = (details) => {
+        const heading = document.getElementById('heading')
+
+        heading.textContent = `Hello, ${details.givenName} ${details.surname}`
+    }
+
+    const logoutAction = () => {
+        fetch('http://localhost:8001/logout', {
+            method: 'POST',
+            credentials: "include"
+        })
+        .then(res => handleLogout())
+        .catch(err => alert('there was an error'))
+
+    }
+
+    const handleLogout = () => {
+        toggleButtons()
+        
+        const heading = document.getElementById('heading')
+        heading.textContent = "Hello"
+    }
+</script>
