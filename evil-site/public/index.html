@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<body>
+    <h1 id="heading">
+        Hello
+    </h1>
+</body>
+<script>
+    const getDetails = () => {
+        fetch('http://localhost:8001/authenticated-endpoint', {
+            method: 'GET',
+            credentials: "include",
+        })
+        .then(res => res.json())
+        .then(data => updateHeading(data))
+        .catch(err => alert('there was an error'))
+    }
+
+    const updateHeading = (details) => {
+        const heading = document.getElementById('heading')
+
+        heading.textContent = `Hello, ${details.givenName} ${details.surname}`
+    }
+
+    getDetails()
+</script>
