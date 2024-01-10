@@ -17,3 +17,8 @@ POST http://localhost:8001/logout
 ### Name: authenticated endpoint
 GET http://localhost:8001/authenticated-endpoint
 Origin: testing
+
+### Name: login options request
+OPTIONS http://localhost:8001/login
+Content-Type: application/json
+access-control-request-headers: content-type

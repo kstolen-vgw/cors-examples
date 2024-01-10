@@ -3,21 +3,58 @@ import cookieParser from 'cookie-parser'
 
 const router = express()
 
-router.get('/healthcheck', (req, res, next) => {
-    res.send(200).json()
-})
+const updateVaryHeader = (res, value) => {
+    const updatedHeader = res.getHeader('Vary') ? res.getHeader('Vary') + `,${value}` : value
+    
+    res.setHeader('Vary', updatedHeader)
+}
+const allowOrigins = (req, res) => { 
+    // res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8002')
 
-const allowAllOrigins = (req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', req.get('origin') ?? 'localhost')
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+    const knownOrigins = [
+        'http://localhost:8002',
+        'https://my.dev.site.com'
+    ]
+
+    const requestOrigin = req.get('origin')
+    if (knownOrigins.includes(requestOrigin)) {
+        res.setHeader('Access-Control-Allow-Origin', requestOrigin)
+    }
+    updateVaryHeader(res, 'Origin')
+}
+
+const allowHeaders = (req, res) => {
+    // res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+    if (req.method.toUpperCase() === 'OPTIONS') {
+        const requestHeaders = req.headers['access-control-request-headers'];
+        if (requestHeaders ) 
+            res.setHeader('Access-Control-Allow-Headers', requestHeaders)
+        updateVaryHeader(res, 'Access-Control-Request-Headers')
+    }
+}
+
+const allowCredentials = (res) => {
     res.setHeader('Access-Control-Allow-Credentials', 'true')
+}
+
+const corsMiddleware = (req, res, next) => {
+    allowOrigins(req, res)
+    allowHeaders(req, res)
+    allowCredentials(res)
+
+
     next()
 }
 
 router.use(cookieParser())
 
-router.options('/login', allowAllOrigins)
-router.post('/login', express.json(), allowAllOrigins, (req, res, next) => {
+
+router.get('/healthcheck', corsMiddleware, (req, res, next) => {
+    res.status(200).send('hello')
+})
+
+router.options('/login', corsMiddleware)
+router.post('/login', express.json(), corsMiddleware, (req, res, next) => {
     const username = req.body.username
     const password = req.body.password
 
@@ -28,19 +65,19 @@ router.post('/login', express.json(), allowAllOrigins, (req, res, next) => {
     res.cookie('custom-auth-cookie', 'why-hello-there', {
         secure: false,
         httpOnly: true,
-        maxAge: 1_000_000
+        maxAge: 1_000_000,
     })
 
     res.status(200).send('Login OK')
 })
 
-router.post('/logout', allowAllOrigins, (req, res, next) => {
+router.post('/logout', corsMiddleware, (req, res, next) => {
     res.clearCookie('custom-auth-cookie')
 
     res.status(200).send('logged out')
 })
 
-router.get('/authenticated-endpoint', allowAllOrigins, (req, res, next) => {
+router.get('/authenticated-endpoint', corsMiddleware, (req, res, next) => {
     const authCookie = req.cookies['custom-auth-cookie']
 
     if (!authCookie) {
