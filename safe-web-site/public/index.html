@@ -3,15 +3,25 @@
     <h1 id="heading">
         Hello
     </h1>
-    <button name="button" onclick="loginAction()" style="display: block">login</button>
+    <button onclick="healthCheck()" style="display: block">test auth service ok</button>
+    <button onclick="loginAction()" style="display: block">login</button>
 
-    <button name="button" onclick="getDetails()" style="display: none">get my details</button>
+    <button onclick="getDetails()" style="display: none">get my details</button>
 
-    <button name="button" onclick="logoutAction()" style="display: none">logout</button>
+    <button onclick="logoutAction()" style="display: none">logout</button>
 </body>
 <script>
+    const authServerUrl = 'http://localhost:8001'
+
+    const healthCheck = () => {
+        fetch(`${authServerUrl}/healthcheck`)
+        .then(res => res.text())
+        .then(data => alert(data))
+        .catch(err => alert(err))
+    }
+
     const loginAction = () => {
-        fetch('http://localhost:8001/login', {
+        fetch(`${authServerUrl}/login`, {
             method: 'POST',
             body: JSON.stringify({
                 username: "user",
@@ -20,7 +30,7 @@
             headers: {
                 "Content-Type": "application/json",
             },
-            credentials: "include"
+            credentials: "include",
         })
         .then(res => toggleButtons())
         .catch(err => alert(err))
@@ -35,7 +45,7 @@
     }
 
     const getDetails = () => {
-        fetch('http://localhost:8001/authenticated-endpoint', {
+        fetch(`${authServerUrl}/authenticated-endpoint`, {
             method: 'GET',
             credentials: "include",
         })
@@ -51,7 +61,7 @@
     }
 
     const logoutAction = () => {
-        fetch('http://localhost:8001/logout', {
+        fetch(`${authServerUrl}/logout`, {
             method: 'POST',
             credentials: "include"
         })
@@ -62,7 +72,7 @@
 
     const handleLogout = () => {
         toggleButtons()
-        
+
         const heading = document.getElementById('heading')
         heading.textContent = "Hello"
     }
