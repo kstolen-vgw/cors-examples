@@ -1,71 +1,10 @@
 import express from 'express'
 import cookieParser from 'cookie-parser'
+import { corsMiddleware } from './cors.js'
 
 const router = express()
 
-const updateVaryHeader = (res, value) => {
-    const updatedHeader = res.getHeader('Vary') ? res.getHeader('Vary') + `,${value}` : value
-    
-    res.setHeader('Vary', updatedHeader)
-}
-const allowOrigins = (req, res) => { 
-    // res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8002')
-
-    const knownOrigins = [
-        'http://localhost:8002',
-        'https://my.dev.site.com'
-    ]
-
-    const requestOrigin = req.get('origin')
-    if (knownOrigins.includes(requestOrigin)) {
-        res.setHeader('Access-Control-Allow-Origin', requestOrigin)
-        updateVaryHeader(res, 'Origin')
-        return true
-    }
-
-    return false
-}
-
-const allowHeaders = (req, res) => {
-    // res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
-    if (req.method.toUpperCase() === 'OPTIONS') {
-        const requestHeaders = req.headers['access-control-request-headers'];
-        if (requestHeaders ) 
-            res.setHeader('Access-Control-Allow-Headers', requestHeaders)
-        updateVaryHeader(res, 'Access-Control-Request-Headers')
-    }
-}
-
-const allowCredentials = (res) => {
-    res.setHeader('Access-Control-Allow-Credentials', 'true')
-}
-
-const allowMethods = (req, res) => {
-    if (req.method.toUpperCase() === 'OPTIONS') {
-        const allowedMethods = [
-            'GET',
-            'POST',
-            'OPTIONS'
-        ]
-        
-        res.setHeader('Access-Control-Allow-Methods',allowedMethods.join(','))
-    
-        return allowedMethods.includes(req.method.toUpperCase())
-    }
-
-    return true
-}
-
-const corsMiddleware = (req, res, next) => {
-    allowCredentials(res)
-    allowHeaders(req, res)
-
-    if (allowOrigins(req, res) && allowMethods(req, res)) 
-        next()
-}
-
 router.use(cookieParser())
-
 
 router.get('/healthcheck', corsMiddleware, (req, res, next) => {
     res.status(200).send('hello')
@@ -106,6 +45,12 @@ router.get('/authenticated-endpoint', corsMiddleware, (req, res, next) => {
         givenName: 'John',
         surname: 'Doe',
     })
+})
+
+router.get('/custom-headers', corsMiddleware, (req, res, next) => {
+    res.setHeader('X-My-Custom-Header', 'helloWorld')
+
+    res.sendStatus(200)
 })
 
 router.options('/user', corsMiddleware)
