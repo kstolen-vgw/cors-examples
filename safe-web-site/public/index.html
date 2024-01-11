@@ -5,16 +5,20 @@
     </h1>
     <button onclick="healthCheck()" style="display: block">test auth service ok</button>
     <button onclick="loginAction()" style="display: block">login</button>
-
     <button onclick="getDetails()" style="display: none">get my details</button>
     <button onclick="deleteUser()" style="display: none;">delete user</button>
     <button onclick="logoutAction()" style="display: none">logout</button>
+    <button onclick="getHeader()">get custom header</button>
+    
 </body>
 <script>
     const authServerUrl = 'http://localhost:8001'
 
     const healthCheck = () => {
-        fetch(`${authServerUrl}/healthcheck`)
+        fetch(`${authServerUrl}/healthcheck`,
+        {
+            method: 'GET'
+        })
         .then(res => res.text())
         .then(data => alert(data))
         .catch(err => alert(err))
@@ -86,4 +90,16 @@
         const heading = document.getElementById('heading')
         heading.textContent = "Hello"
     }
+
+    const getHeader = () => {
+        fetch(`${authServerUrl}/custom-headers`)
+        .then(res => res.headers.get('X-My-Custom-Header'))
+        .then(h => console.log(h))
+        .catch(err => alert(`there was an error ${err}`))
+    }
+    
 </script>
+
+<!--
+
+-->
