@@ -3,16 +3,21 @@
     <h1 id="heading">
         Hello
     </h1>
-    <button onclick="healthCheck()" style="display: block">test auth service ok</button>
-    <button onclick="loginAction()" style="display: block">login</button>
-    <button onclick="getDetails()" style="display: none">get my details</button>
-    <button onclick="deleteUser()" style="display: none;">delete user</button>
-    <button onclick="logoutAction()" style="display: none">logout</button>
     <button onclick="getHeader()">get custom header</button>
+    <button onclick="healthCheck()">test auth service ok</button>
+    <button onclick="loginAction()" style="display: block">login</button>
+    <br />
+    <button onclick="getDetails()" style="display: none">get my details</button>
+    <button onclick="sameOriginRequest()" style="display: none;">make same origin request</button>
+    <button onclick="deleteUser()" style="display: none;">delete user</button>
+    <br />
+    <button onclick="logoutAction()" style="display: none">logout</button>
+    
     
 </body>
 <script>
     const authServerUrl = 'http://localhost:8001'
+    const safeSiteUrl = 'http://localhost:8002'
 
     const healthCheck = () => {
         fetch(`${authServerUrl}/healthcheck`,
@@ -62,6 +67,14 @@
         const heading = document.getElementById('heading')
 
         heading.textContent = `Hello, ${details.givenName} ${details.surname}`
+    }
+
+    const sameOriginRequest = () => {
+        fetch(`${safeSiteUrl}/api`, {
+            method: 'GET',
+        })
+        .then(res => res.status)
+        .catch(err => alert('there was an error'))
     }
 
     const deleteUser = () => {

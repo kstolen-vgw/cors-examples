@@ -22,11 +22,6 @@ const allowOrigins = (req, res) => {
 
 const allowHeaders = (req, res) => {
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
-    
-    // const requestHeaders = req.headers['access-control-request-headers']
-    // if (requestHeaders ) 
-    //     res.setHeader('access-control-allow-headers', requestHeaders)
-    // vary(res, 'access-control-request-headers')
 }
 
 const allowCredentials = (res) => {
